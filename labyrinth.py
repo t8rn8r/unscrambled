@@ -2,7 +2,7 @@ import random
 import json
 from wordfreq import word_frequency
 
-minotaur = "minotaur"
+known_word = "minotaur"
 letters = "ashencneton"
 startletters = "tiw"
 
@@ -68,12 +68,19 @@ def main():
     # get the text to unscramble
     letters = ""
     while letters == "":
-        letters = input("Enter the text to unscramble: ")
+        letters = input("\nEnter the text to unscramble:\n")
         if letters == "":
             print("You have to give me some text to unscramble!\n")
+    print("\nHere's what you entered: " + letters + "\n\n")
+
+    # get any known words
+    known_word = ""
+    known_word = input("Is there a word you KNOW is in the unscrambled phrase?\n(If not, just press Enter):\n")
+    print(known_word)
 
     # Opening JSON file
     with open("words_dictionary.json") as json_file:
+        print("Please wait while I search! (This WILL take a while!)")
         # Get words that start with t, i, and w, the capitalized puzzle letters
         words = json.load(json_file)
         t_words = getCandidates(words, "t", letters)
@@ -88,7 +95,7 @@ def main():
                 for w in w_words:
                     if (histogram(t+i+w) == totalhist):
                         phrase = (t+" "+i+" "+w)
-                        phrase += " "+minotaur
+                        phrase += " "+known_word
 
                         wf = word_frequency(t, "en", wordlist='small', minimum=0.0) * \
                          word_frequency(i, "en", wordlist='small', minimum=0.0) * \
