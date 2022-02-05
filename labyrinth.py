@@ -68,24 +68,39 @@ def main():
     # get the text to unscramble
     letters = ""
     while letters == "":
-        letters = input("\nEnter the text to unscramble:\n")
+        # letters = input("\nEnter the complete text to unscramble:\n") TODO uncomment
+        letters = "ashencnetonminotaur" # TODO remove 
         if letters == "":
             print("You have to give me some text to unscramble!\n")
     print("\nHere's what you entered: " + letters + "\n\n")
 
     # get any known words
-    known_word = ""
-    known_word = input("Is there a word you KNOW is in the unscrambled phrase?\n(If not, just press Enter):\n")
-    print(known_word)
+    # known_word = "" TODO uncomment
+    # known_word = input("Is there a word you KNOW is in the unscrambled phrase?\n(If not, just press Enter):\n")
+    known_word = "minotaur" # TODO remove
+    # if a known word is provided, remove its letters from 'letters'
+    # for char in known_word:
+    #     print(char)
+
 
     # Opening JSON file
     with open("words_dictionary.json") as json_file:
         print("Please wait while I search! (This WILL take a while!)")
         # Get words that start with t, i, and w, the capitalized puzzle letters
         words = json.load(json_file)
+        word_count = 0
+        
         t_words = getCandidates(words, "t", letters)
+        word_count += len(t_words)
+        print("\n" + str(word_count) + " words found...", end='')
+        
         i_words = getCandidates(words, "i", letters)
+        word_count += len(i_words)
+        print("\r" + str(word_count) + " words found...", end='')
+        
         w_words = getCandidates(words, "w", letters)
+        word_count += len(w_words)
+        print("\r" + str(word_count) + " words found...\n")
 
         totalhist = histogram(letters + "tiw")
 
