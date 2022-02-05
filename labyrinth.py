@@ -16,7 +16,6 @@ def histogram(letters):
     for letter in letters:
         if letter in d:
             d[letter] += 1
-        else:
             d[letter] = 1
     return d
 
@@ -65,6 +64,14 @@ def main():
     create phrases with only the given global "letters" and rank according to usage frequency
     """
     words = {}
+
+    # get the text to unscramble
+    letters = ""
+    while letters == "":
+        letters = input("Enter the text to unscramble: ")
+        if letters == "":
+            print("You have to give me some text to unscramble!\n")
+
     # Opening JSON file
     with open("words_dictionary.json") as json_file:
         # Get words that start with t, i, and w, the capitalized puzzle letters
