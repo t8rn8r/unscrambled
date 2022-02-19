@@ -68,18 +68,6 @@ def getCandidates(all_words, start, letters):
     return candidates
 
 
-def permute(words, visited=[], phrases=[]):
-
-    visited.append(words.pop())
-
-    print(visited)
-
-    if len(words) == 0:
-        return phrases
-    else:
-        return permute(words, visited, phrases)
-
-
 def main():
     """
     create phrases with only the given global "letters" and rank according to usage frequency
