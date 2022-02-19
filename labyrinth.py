@@ -30,8 +30,13 @@ def isSubhist(hist1, hist2):
     Output: Boolean
     """
     for letter in hist1:
-        if letter not in hist2 or hist1[letter] > hist2[letter]:
+        
+        if letter not in hist2: 
             return False
+
+        if hist1[letter] > hist2[letter]:
+            return False
+
     return True
 
 
