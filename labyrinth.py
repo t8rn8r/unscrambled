@@ -6,6 +6,7 @@ known_word = "minotaur"
 letters = "ashencneton"
 startletters = "tiw"
 
+
 def histogram(letters):
     """
     Creates a frequency histogram of the given letters
@@ -16,10 +17,11 @@ def histogram(letters):
     for letter in letters:
         if letter in d:
             d[letter] += 1
+        else:
             d[letter] = 1
+    
     return d
 
-letterhist = histogram(letters)
 
 def isSubhist(hist1, hist2):
     """
@@ -31,6 +33,7 @@ def isSubhist(hist1, hist2):
         if letter not in hist2 or hist1[letter] > hist2[letter]:
             return False
     return True
+
 
 def getWordsStartWith(words, start):
     """
@@ -59,52 +62,73 @@ def getCandidates(all_words, start, letters):
             candidates.add(word)
     return candidates
 
+
+def permute(words, visited=[], phrases=[]):
+
+    visited.append(words.pop())
+
+    print(visited)
+
+    if len(words) == 0:
+        return phrases
+    else:
+        return permute(words, visited, phrases)
+
+
 def main():
     """
     create phrases with only the given global "letters" and rank according to usage frequency
     """
+
+    print("histogram: " + str(histogram("test")))
+
     words = {}
 
-    # get the text to unscramble
+    # get the text to unscramble from user input
     letters = ""
     while letters == "":
         # letters = input("\nEnter the complete text to unscramble:\n") TODO uncomment
-        letters = "ashencnetonminotaur" # TODO remove 
+        letters = "minotaurashencneton"  # TODO remove
         if letters == "":
             print("You have to give me some text to unscramble!\n")
     print("\nHere's what you entered: " + letters + "\n\n")
 
-    # get any known words
+    # get any known words from user input
     # known_word = "" TODO uncomment
     # known_word = input("Is there a word you KNOW is in the unscrambled phrase?\n(If not, just press Enter):\n")
-    known_word = "minotaur" # TODO remove
+    known_word = "minotaur"  # TODO remove
+    print("\nHere's what you entered: " + known_word + "\n\n")
     # if a known word is provided, remove its letters from 'letters'
-    # for char in known_word:
-    #     print(char)
+    for char in known_word:
+        letters = letters.replace(char, '', 1)
 
+    # get start letters from user input
+    startletters = ""
+    # startletters = input("If you know the letters that the words in the phrase start with, enter them here with no spaces or punctuation:\nIf not, just press enter.\n") TODO uncomment
+    startletters = "tiw"  # TODO remove
+    if startletters != "":
+        print("\nHere are the letters you entered: ", end='')
+        for char in startletters:
+            print(char + ", ", end='')
+        print("\n\n")
 
     # Opening JSON file
     with open("words_dictionary.json") as json_file:
-        print("Please wait while I search! (This WILL take a while!)")
-        # Get words that start with t, i, and w, the capitalized puzzle letters
+        print("Please wait while I search! (This WILL take a while!)\n")
+
+        # get the list of all words
         words = json.load(json_file)
-        word_count = 0
-        
-        t_words = getCandidates(words, "t", letters)
-        word_count += len(t_words)
-        print("\n" + str(word_count) + " words found...", end='')
-        
-        i_words = getCandidates(words, "i", letters)
-        word_count += len(i_words)
-        print("\r" + str(word_count) + " words found...", end='')
-        
-        w_words = getCandidates(words, "w", letters)
-        word_count += len(w_words)
-        print("\r" + str(word_count) + " words found...\n")
+        # get all the words that might be in the scrambled text
+        potential_words = set()
+        for char in startletters:
+            potential_words.update(getCandidates(words, char, letters))
+            print(str(len(potential_words)) + " words found...", end='\r')
+        print()
 
         totalhist = histogram(letters + "tiw")
 
-        phrases = dict()
+        phrases = permute(potential_words)
+
         for t in t_words:
             for i in i_words:
                 for w in w_words:
@@ -113,12 +137,15 @@ def main():
                         phrase += " "+known_word
 
                         wf = word_frequency(t, "en", wordlist='small', minimum=0.0) * \
-                         word_frequency(i, "en", wordlist='small', minimum=0.0) * \
-                         word_frequency(w, "en", wordlist='small', minimum=0.0)
+                            word_frequency(i, "en", wordlist='small', minimum=0.0) * \
+                            word_frequency(
+                                w, "en", wordlist='small', minimum=0.0)
 
                         phrases[phrase] = wf
 
-        print( dict(sorted(phrases.items(), key=lambda item: item[1], reverse=True)) )
+        print(
+            dict(sorted(phrases.items(), key=lambda item: item[1], reverse=True)))
+
 
 if __name__ == '__main__':
     main()
