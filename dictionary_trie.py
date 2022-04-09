@@ -124,7 +124,7 @@ def make_dict():
 
     # https://docs.python.org/3/library/pickle.html
     with open("words_trie.data", "wb") as outfile:
-        pickle.dump(words, outfile, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(words_trie, outfile, pickle.HIGHEST_PROTOCOL)
 
 
 if __name__ == '__main__':

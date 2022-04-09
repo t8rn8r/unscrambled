@@ -3,12 +3,15 @@ import collections
 from more_itertools import powerset
 from dictionary_trie import TrieNode, Trie
 from wordfreq import word_frequency
+import csv
 
 
-# global_text = "".join(sorted("tiwashencneton"))
-global_text = "".join(sorted("tiwashencneton"))
+# global_text = "".join(sorted("tiwashencneton")) # this is Tate's labyrinth puzzle
+# global_text = "".join(sorted("ckkiaomgnilotirldb")) # 'to kill a mockingbird'
+global_text = "".join(sorted("otebroontbtoe"))  # 'to be or not to be'
 
 phrases = Trie()
+phrase_count = 0
 
 
 def get_words(text, allwords):
@@ -38,8 +41,10 @@ def get_phrases(text, words_dict, current_phrase=[]):
     word_list = sorted(list(words_dict), key=len, reverse=True)
 
     if len(text) == 0:
+        global phrase_count
+        phrase_count += 1
         phrases.insert(current_phrase)
-        print("%i phrases found!" % len(phrases.query_phrases()), end='\r')
+        print("%i phrases found!" % phrase_count, end='\r')
 
     for word in word_list:
         words_dict.pop(word)
@@ -61,6 +66,26 @@ def get_phrases(text, words_dict, current_phrase=[]):
 
 
 def main():
+
+    ################################
+    # THIS PART IS FOR YOU! ########
+    ################################
+
+    # only choose the best n words
+    n = 200
+    # bigger 'b' prefers longer words; smaller 'b' chooses more frequent words.
+    b = 1
+    # only consider words at least 'l' letters long
+    l = 2
+    # include these words even if they're too short
+    whitelist = ['a', 'i', 'be', 'to', 'or', 'and']
+    # don't include these words no matter what
+    blacklist = ['bo', 'botonee', 'tort', 'bott', 'brot', 'ro',
+                 'ort', 'bor', 'tornote', 'bobo', 'tenter', 'oto',
+                 'terton', 'te', 'neebor', 'boreen', 'bon', 'boort', 
+                 'betone', 'otto', 'oberon']
+
+    ################################
 
     allwords = Trie()
     with open("words_trie.data", "rb") as infile:
@@ -86,17 +111,34 @@ def main():
             # This gives each word a "frequency" proportional to its frequency and its length
             # word_freq[w] = word_frequency(w, 'en', wordlist='small', minimum=0) * pow(1000, len(w))
             word_freq[word] = word_frequency(
-                word, 'en', wordlist='small', minimum=0) * pow(10, len(word))
+                word, 'en', wordlist='small', minimum=0) * pow(b, len(word))
+    
     # sort by my custom scoring for each word
     word_freq = dict(
         sorted(word_freq.items(), key=lambda item: item[1], reverse=True))
     print()
     print("%i potential words found!" % len(word_freq))
-    # clear phrases (just in case!)
-    phrases = []
-    get_phrases(global_text, dict(words.query('')))
 
-    print()
+    new_words = Trie()
+    count = 0
+    for word in word_freq:
+        if (len(word) >= l or word in whitelist) and word not in blacklist:
+            count += 1
+            if count == n:
+                break
+            new_words.insert(word)
+
+    get_phrases(global_text, dict(new_words.query('')))
+
+    with open('output.csv', 'w') as outfile:
+        csvwriter = csv.writer(outfile)
+        for phrase in phrases.query_phrases():
+            for word in phrase:
+                decoded_words = allwords.codex[word]
+                csvwriter.writerow(decoded_words)
+            csvwriter.writerow("")
+
+    print('\ndone')
 
 
 if __name__ == '__main__':
